@@ -330,7 +330,6 @@
     <string-array name="config_cell_retries_per_error_code">
         <item>36,3</item> <!-- REGULAR_DEACTIVATION, 3 retries -->
     </string-array>
-<<<<<<< HEAD
     
       <!-- Is the notification LED intrusive? Used to decide if there should be a disable option -->
     <bool name="config_intrusiveNotificationLed">true</bool>
