@@ -101,10 +101,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/moto/shamu/spn-conf.xml:system/etc/spn-conf.xml
 
-# This device is 560dpi.  However the platform doesn't
-# currently contain all of the bitmaps at 560dpi density so
-# we do this little trick to fall back to the xxhdpi version
-# if the 560dpi doesn't exist.
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := 560dpi
 # A list of dpis to select prebuilt apk, in precedence order.
@@ -118,7 +114,6 @@ DEVICE_PACKAGE_OVERLAYS := \
 PRODUCT_PACKAGES := \
     libwpa_client \
     hostapd \
-    dhcpcd.conf \
     wpa_supplicant \
     wpa_supplicant.conf
 
@@ -220,7 +215,7 @@ PRODUCT_PACKAGES += \
     libxml2
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.opengles.version=196609
+    ro.opengles.version=196610
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.sf.lcd_density=560
@@ -249,7 +244,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Rich Communications Service is disabled in 5.1
 PRODUCT_PROPERTY_OVERRIDES += \
-    persist.rcs.supported=0
+    persist.rcs.supported=0 \
+    persist.radio.data_no_toggle=1
+
 
 #Reduce IMS logging
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -354,6 +351,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml \
     frameworks/native/data/etc/android.hardware.nfc.hce.xml:system/etc/permissions/android.hardware.nfc.hce.xml \
+    frameworks/native/data/etc/android.hardware.nfc.hcef.xml:system/etc/permissions/android.hardware.nfc.hcef.xml \
     device/moto/shamu/nfc/libnfc-brcm.conf:system/etc/libnfc-brcm.conf \
     device/moto/shamu/nfc/libnfc-brcm-20795a10.conf:system/etc/libnfc-brcm-20795a10.conf
 
@@ -396,7 +394,8 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     ro.qualcomm.perf.cores_online=2
 
 PRODUCT_PACKAGES += \
-    power.shamu
+    power.shamu \
+    thermal.shamu
 
 # For android_filesystem_config.h
 PRODUCT_PACKAGES += \
@@ -432,3 +431,7 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     sys.usb.config=mtp,adb \
     persist.sys.usb.config=mtp,adb \
     ro.adb.secure=0 \
+
+# OEM Unlock reporting
+ADDITIONAL_DEFAULT_PROPERTIES += \
+    ro.oem_unlock_supported=1
