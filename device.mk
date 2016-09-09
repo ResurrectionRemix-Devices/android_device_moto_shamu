@@ -101,6 +101,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/moto/shamu/spn-conf.xml:system/etc/spn-conf.xml
 
+# This device is 560dpi.  However the platform doesn't
+# currently contain all of the bitmaps at 560dpi density so
+# we do this little trick to fall back to the xxhdpi version
+# if the 560dpi doesn't exist.
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := 560dpi
 # A list of dpis to select prebuilt apk, in precedence order.
@@ -173,10 +177,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     fmas.spkr_angles=10 \
     fmas.spkr_sgain=0
 
-# Gello
-PRODUCT_PACKAGES += \
-    Gello
-
 PRODUCT_PACKAGES += \
     libqomx_core \
     libmm-qcamera \
@@ -207,7 +207,7 @@ PRODUCT_PACKAGES += \
     libxml2
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.opengles.version=196610
+    ro.opengles.version=196609
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.sf.lcd_density=560
@@ -236,9 +236,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Rich Communications Service is disabled in 5.1
 PRODUCT_PROPERTY_OVERRIDES += \
-    persist.rcs.supported=0 \
-    persist.radio.data_no_toggle=1
-
+    persist.rcs.supported=0
 
 #Reduce IMS logging
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -256,24 +254,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.camera.sensor.debug=0 \
     vidc.debug.level=1
 
-#Additional radio and audio
-PRODUCT_PROPERTY_OVERRIDES += \
-    persist.rcs.supported=0 \
-    persist.audio.dualmic.config=endfire \
-    persist.audio.fluence.voicecall=true \
-    persist.audio.fluence.voicerec=false \
-    persist.audio.fluence.speaker=false \
-    persist.radio.sib16_support=1 \
-    persist.data.qmi.adb_logmask=0 \
-    persist.data.iwlan.enable=true \
-    persist.radio.ignore_ims_wlan=1 \
-    persist.radio.data_con_rprt=1 \
-    fmas.spkr_6ch=35,20,110 \
-    fmas.spkr_2ch=35,25 \
-    fmas.spkr_angles=10 \
-    fmas.spkr_sgain=0 \
-    media.aac_51_output_enabled=true \
-
 #Disable QC Oem Hook
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.radio.oem_socket=false
@@ -288,8 +268,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # LTE, CDMA, GSM/WCDMA
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.default_network=10 \
-    telephony.lteOnCdmaDevice=1 \
-    ro.telephony.ril.config=setPrefNwTypeOnUnsolConnected
+    telephony.lteOnCdmaDevice=1
 
 # SIM based FSG loading & MCFG activation
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -343,7 +322,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml \
     frameworks/native/data/etc/android.hardware.nfc.hce.xml:system/etc/permissions/android.hardware.nfc.hce.xml \
-    frameworks/native/data/etc/android.hardware.nfc.hcef.xml:system/etc/permissions/android.hardware.nfc.hcef.xml \
     device/moto/shamu/nfc/libnfc-brcm.conf:system/etc/libnfc-brcm.conf \
     device/moto/shamu/nfc/libnfc-brcm-20795a10.conf:system/etc/libnfc-brcm-20795a10.conf
 
@@ -386,8 +364,7 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     ro.qualcomm.perf.cores_online=2
 
 PRODUCT_PACKAGES += \
-    power.shamu \
-    thermal.shamu
+    power.shamu
 
 # For android_filesystem_config.h
 PRODUCT_PACKAGES += \
@@ -418,12 +395,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     audio_hal.period_size=192
 
-# set default USB configuration
-PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-    sys.usb.config=mtp,adb \
-    persist.sys.usb.config=mtp,adb \
-    ro.adb.secure=0 \
-
-# OEM Unlock reporting
-ADDITIONAL_DEFAULT_PROPERTIES += \
-    ro.oem_unlock_supported=1
+# Gello
+PRODUCT_PACKAGES += \
+    Gello

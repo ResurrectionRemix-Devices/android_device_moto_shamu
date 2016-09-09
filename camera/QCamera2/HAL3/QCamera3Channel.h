@@ -65,7 +65,6 @@ public:
     int32_t addStream(cam_stream_type_t streamType,
                       cam_format_t streamFormat,
                       cam_dimension_t streamDim,
-                      cam_rotation_t streamRotation,
                       uint8_t minStreamBufnum,
                       uint32_t postprocessMask,
                       cam_is_type_t isType);
@@ -165,7 +164,6 @@ private:
     camera3_stream_t *mCamera3Stream;
     uint32_t mNumBufs;
     cam_stream_type_t mStreamType; // Stream type
-    cam_rotation_t mRotation;
     uint8_t mIntent;
 };
 
