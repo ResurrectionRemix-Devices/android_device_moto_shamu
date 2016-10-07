@@ -236,9 +236,6 @@ on boot
     chown media media /sys/devices/c55_ctrl/gpio_reset/value
 
     # LED permissions
-    chown system system /sys/class/leds/red/brightness
-    chown system system /sys/class/leds/green/brightness
-    chown system system /sys/class/leds/blue/brightness
     chmod 664 /sys/class/leds/red/brightness
     chmod 664 /sys/class/leds/green/brightness
     chmod 664 /sys/class/leds/blue/brightness
@@ -460,8 +457,8 @@ service adspd /system/bin/adspd /dev/ttyHS3
 on property:sys.boot_completed=1
     start qcom-post-boot
 
-#on property:ro.debuggable=1
-#   start ss_ramdump
+on property:ro.debuggable=1
+    start ss_ramdump
 
 on property:ro.data.large_tcp_window_size=true
     # Adjust socket buffer to enlarge TCP receive window for high bandwidth (e.g. DO-RevB)

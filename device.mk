@@ -154,12 +154,14 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.audio.fluence.speaker=false \
     ro.audio.monitorRotation=true \
     drm.service.enabled=true \
-    ro.facelock.black_timeout=400 \
-    ro.facelock.det_timeout=1500 \
-    ro.facelock.rec_timeout=2500 \
-    ro.facelock.lively_timeout=2500 \
-    ro.facelock.est_max_time=600 \
-    ro.facelock.use_intro_anim=false
+    ro.facelock.black_timeout=700 \
+    ro.facelock.det_timeout=2500 \
+    ro.facelock.rec_timeout=3500 \
+    ro.facelock.est_max_time=600
+
+# Enable sdcardfs
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.sys.sdcardfs=true
 
 # Audio effects
 PRODUCT_PACKAGES += \
@@ -172,18 +174,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     fmas.spkr_2ch=35,25 \
     fmas.spkr_angles=10 \
     fmas.spkr_sgain=0
-
-# Camera
-PRODUCT_PACKAGES += \
-    Snap
-
-# Snap Config
-PRODUCT_PROPERTY_OVERRIDES += \
-    persist.camera.cpp.duplication=false
-
-# Gello
-PRODUCT_PACKAGES += \
-    Gello
 
 PRODUCT_PACKAGES += \
     libqomx_core \
@@ -200,6 +190,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     lights.shamu
 
+# Filesystem management tools
+PRODUCT_PACKAGES += \
+    e2fsck
+
 # for launcher layout
 #PRODUCT_PACKAGES += \
 #    ShamuLayout
@@ -210,9 +204,17 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     keystore.msm8084
 
+#Snap Camera
 PRODUCT_PACKAGES += \
-    librmnetctl \
-    libxml2
+    Snap
+
+# Snap Configs
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.camera.cpp.duplication=false
+
+# Gello
+#PRODUCT_PACKAGES += \
+#    Gello
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=196610
@@ -229,6 +231,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.radio.apm_sim_not_pwdn=1 \
     persist.radio.no_wait_for_card=1 \
+    persist.radio.data_no_toggle=1 \
     persist.radio.sib16_support=1 \
     persist.data.qmi.adb_logmask=0 \
     persist.radio.alt_mbn_name=tmo_alt.mbn
@@ -236,17 +239,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # never dexopt the MotoSignature
 $(call add-product-dex-preopt-module-config,MotoSignatureApp,disable)
 
-# WiFi calling
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.data.iwlan.enable=true \
     persist.radio.ignore_ims_wlan=1 \
     persist.radio.data_con_rprt=1
-
-# Rich Communications Service is disabled in 5.1
-PRODUCT_PROPERTY_OVERRIDES += \
-    persist.rcs.supported=0 \
-    persist.radio.data_no_toggle=1
-
 
 #Reduce IMS logging
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -264,24 +260,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.camera.sensor.debug=0 \
     vidc.debug.level=1
 
-#Additional radio and audio
-PRODUCT_PROPERTY_OVERRIDES += \
-    persist.rcs.supported=0 \
-    persist.audio.dualmic.config=endfire \
-    persist.audio.fluence.voicecall=true \
-    persist.audio.fluence.voicerec=false \
-    persist.audio.fluence.speaker=false \
-    persist.radio.sib16_support=1 \
-    persist.data.qmi.adb_logmask=0 \
-    persist.data.iwlan.enable=true \
-    persist.radio.ignore_ims_wlan=1 \
-    persist.radio.data_con_rprt=1 \
-    fmas.spkr_6ch=35,20,110 \
-    fmas.spkr_2ch=35,25 \
-    fmas.spkr_angles=10 \
-    fmas.spkr_sgain=0 \
-    media.aac_51_output_enabled=true \
-
 #Disable QC Oem Hook
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.radio.oem_socket=false
@@ -296,8 +274,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # LTE, CDMA, GSM/WCDMA
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.default_network=10 \
-    telephony.lteOnCdmaDevice=1 \
-    ro.telephony.ril.config=setPrefNwTypeOnUnsolConnected
+    telephony.lteOnCdmaDevice=1
 
 # SIM based FSG loading & MCFG activation
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -348,6 +325,10 @@ PRODUCT_PACKAGES += \
     NfcNci \
     Tag
 
+PRODUCT_PACKAGES += \
+    librmnetctl \
+    libxml2
+
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml \
     frameworks/native/data/etc/android.hardware.nfc.hce.xml:system/etc/permissions/android.hardware.nfc.hce.xml \
@@ -385,12 +366,23 @@ AUDIO_FEATURE_ENABLED_MULTI_VOICE_SESSIONS := true
 $(call inherit-product, frameworks/native/build/phone-xxxhdpi-3072-dalvik-heap.mk)
 $(call inherit-product-if-exists, frameworks/native/build/phone-xxxhdpi-3072-hwui-memory.mk)
 
+# In userdebug, add minidebug info the the boot image and the system server to support
+# diagnosing native crashes.
+ifneq (,$(filter userdebug, $(TARGET_BUILD_VARIANT)))
+    # Boot image.
+    PRODUCT_DEX_PREOPT_BOOT_FLAGS += --generate-mini-debug-info
+    # System server and some of its services.
+    # Note: we cannot use PRODUCT_SYSTEM_SERVER_JARS, as it has not been expanded at this point.
+    $(call add-product-dex-preopt-module-config,services,--generate-mini-debug-info)
+    $(call add-product-dex-preopt-module-config,wifi-service,--generate-mini-debug-info)
+endif
+
 $(call inherit-product-if-exists, hardware/qcom/msm8x84/msm8x84.mk)
 $(call inherit-product-if-exists, vendor/qcom/gpu/msm8x84/msm8x84-gpu-vendor.mk)
 
-# setup dm-verity configs.
-PRODUCT_SYSTEM_VERITY_PARTITION := /dev/block/platform/msm_sdcc.1/by-name/system
-$(call inherit-product, build/target/product/verity.mk)
+# IO Scheduler
+PRODUCT_PROPERTY_OVERRIDES += \
+    sys.io.scheduler=bfq
 
 # setup scheduler tunable
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
@@ -428,12 +420,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Low latency audio buffer size in frames
 PRODUCT_PROPERTY_OVERRIDES += \
     audio_hal.period_size=192
-
-# set default USB configuration
-PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-    sys.usb.config=mtp,adb \
-    persist.sys.usb.config=mtp,adb \
-    ro.adb.secure=0 \
 
 # OEM Unlock reporting
 ADDITIONAL_DEFAULT_PROPERTIES += \
