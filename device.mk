@@ -147,13 +147,14 @@ PRODUCT_PACKAGES += \
     libaudio-resampler
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    media.aac_51_output_enabled=true \
-    persist.audio.dualmic.config=endfire \
-    persist.audio.fluence.voicecall=true \
-    persist.audio.fluence.voicerec=false \
-    persist.audio.fluence.speaker=false \
-    ro.audio.monitorRotation=true \
-    drm.service.enabled=true \
+    ro.audio.monitorRotation=true
+
+# RRM service
+PRODUCT_PROPERTY_OVERRIDES += \
+    drm.service.enabled=true
+
+#Enable facelock properties
+PRODUCT_PROPERTY_OVERRIDES += \
     ro.facelock.black_timeout=700 \
     ro.facelock.det_timeout=2500 \
     ro.facelock.rec_timeout=3500 \
@@ -190,10 +191,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     lights.shamu
 
-# Filesystem management tools
-PRODUCT_PACKAGES += \
-    e2fsck
-
 # for launcher layout
 #PRODUCT_PACKAGES += \
 #    ShamuLayout
@@ -204,17 +201,9 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     keystore.msm8084
 
-#Snap Camera
 PRODUCT_PACKAGES += \
-    Snap
-
-# Snap Configs
-PRODUCT_PROPERTY_OVERRIDES += \
-    persist.camera.cpp.duplication=false
-
-# Gello
-#PRODUCT_PACKAGES += \
-#    Gello
+    librmnetctl \
+    libxml2
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=196610
@@ -234,15 +223,24 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.radio.data_no_toggle=1 \
     persist.radio.sib16_support=1 \
     persist.data.qmi.adb_logmask=0 \
-    persist.radio.alt_mbn_name=tmo_alt.mbn
+    persist.radio.alt_mbn_name=tmo_alt.mbn \
+    ro.com.android.prov_mobiledata=false
 
 # never dexopt the MotoSignature
 $(call add-product-dex-preopt-module-config,MotoSignatureApp,disable)
 
+# WiFi calling
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.data.iwlan.enable=true \
     persist.radio.ignore_ims_wlan=1 \
     persist.radio.data_con_rprt=1
+
+# never dexopt the MotoSignature
+$(call add-product-dex-preopt-module-config,MotoSignatureApp,disable)
+
+# Rich Communications Service is disabled in 5.1
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.rcs.supported=0
 
 #Reduce IMS logging
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -325,10 +323,6 @@ PRODUCT_PACKAGES += \
     NfcNci \
     Tag
 
-PRODUCT_PACKAGES += \
-    librmnetctl \
-    libxml2
-
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml \
     frameworks/native/data/etc/android.hardware.nfc.hce.xml:system/etc/permissions/android.hardware.nfc.hce.xml \
@@ -362,10 +356,6 @@ endif
 # Enable for volte call
 AUDIO_FEATURE_ENABLED_MULTI_VOICE_SESSIONS := true
 
-# Dalvik/HWUI
-$(call inherit-product, frameworks/native/build/phone-xxxhdpi-3072-dalvik-heap.mk)
-$(call inherit-product-if-exists, frameworks/native/build/phone-xxxhdpi-3072-hwui-memory.mk)
-
 # In userdebug, add minidebug info the the boot image and the system server to support
 # diagnosing native crashes.
 ifneq (,$(filter userdebug, $(TARGET_BUILD_VARIANT)))
@@ -377,8 +367,16 @@ ifneq (,$(filter userdebug, $(TARGET_BUILD_VARIANT)))
     $(call add-product-dex-preopt-module-config,wifi-service,--generate-mini-debug-info)
 endif
 
+# Dalvik/HWUI
+$(call inherit-product, frameworks/native/build/phone-xxxhdpi-3072-dalvik-heap.mk)
+$(call inherit-product-if-exists, frameworks/native/build/phone-xxxhdpi-3072-hwui-memory.mk)
+
 $(call inherit-product-if-exists, hardware/qcom/msm8x84/msm8x84.mk)
 $(call inherit-product-if-exists, vendor/qcom/gpu/msm8x84/msm8x84-gpu-vendor.mk)
+
+# setup dm-verity configs.
+#PRODUCT_SYSTEM_VERITY_PARTITION := /dev/block/platform/msm_sdcc.1/by-name/system
+#$(call inherit-product, build/target/product/verity.mk)
 
 # IO Scheduler
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -423,6 +421,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Set correct voice call audio property values
 PRODUCT_PROPERTY_OVERRIDES += \
+    media.aac_51_output_enabled=true \
     ro.config.vc_call_vol_steps=6 \
     persist.audio.dualmic.config=endfire \
     ro.qc.sdk.audio.fluencetype=fluence \
