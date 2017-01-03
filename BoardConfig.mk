@@ -129,8 +129,12 @@ USE_DEVICE_SPECIFIC_CAMERA:= true
 
 BOARD_HAL_STATIC_LIBRARIES := libdumpstate.shamu
 
-# Use Snapdragon LLVM for Nightlies, if available
+# Use Snapdragon LLVM for testing purposes, if available
+ifeq ($(AICP_BUILDTYPE), EXPERIMENTAL)
 TARGET_USE_SDCLANG := true
+else
+USE_CLANG_PLATFORM_BUILD := true
+endif
 
 # Disable dex-preopt of prebuilts to save space.
 DONT_DEXPREOPT_PREBUILTS := true
@@ -138,7 +142,6 @@ DONT_DEXPREOPT_PREBUILTS := true
 # CMHW
 BOARD_USES_CYANOGEN_HARDWARE := true
 BOARD_HARDWARE_CLASS := \
-    hardware/cyanogen/cmhw   \
-    device/moto/shamu/cmhw
+    hardware/cyanogen/cmhw 
 
 -include vendor/motorola/shamu/BoardConfigVendor.mk
