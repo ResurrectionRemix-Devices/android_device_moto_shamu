@@ -433,6 +433,5 @@ PRODUCT_PROPERTY_OVERRIDES += \
 ADDITIONAL_DEFAULT_PROPERTIES += \
     ro.oem_unlock_supported=1
 
-# Browser
-PRODUCT_PACKAGES += \
-    Gello
+# Enable real time lockscreen charging current values
+BOARD_GLOBAL_CFLAGS += -DBATTERY_REAL_INFO
